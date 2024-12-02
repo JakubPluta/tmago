@@ -1,0 +1,17 @@
+endpoints:
+  - name: "Json PlaceHolder"
+    url: "https://jsonplaceholder.typicode.com/posts/1"
+    method: "GET"
+    expect:
+      status: 200
+      maxTime: "500ms"
+      # values:
+      #   - path: "title"
+      #     value: "foo"
+    retry:
+      count: 1
+      delay: "1s"
+    concurrent:
+      users: 5
+      delay: "100ms"
+      total: 200
