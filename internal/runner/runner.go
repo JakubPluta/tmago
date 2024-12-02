@@ -15,6 +15,11 @@ import (
 	"github.com/JakubPluta/tmago/internal/validator"
 )
 
+const (
+	DefaultReportsDir = "reports"
+)
+
+// Runner is a struct that runs tests on endpoints.
 type Runner struct {
 	config   *config.Config
 	client   *http.Client
@@ -71,6 +76,7 @@ func (r *Runner) Run(ctx context.Context) error {
 
 		result.EndTime = time.Now()
 		r.reporter.AddResult(result)
+		r.logger.Info(fmt.Sprintf("Test %s completed. With parameters: TotalRequests: %d, ConcurrentUsers: %d, ConcurrentRequests: %d", endpoint.Name, endpoint.Concurrent.Total, endpoint.Concurrent.Users, endpoint.Concurrent.Total/endpoint.Concurrent.Users))
 	}
 
 	// Generate report

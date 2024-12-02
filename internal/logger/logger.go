@@ -9,6 +9,10 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const (
+	DefaultLogDir = "logs"
+)
+
 type Logger struct {
 	log     zerolog.Logger
 	console zerolog.Logger
@@ -23,6 +27,9 @@ type Logger struct {
 //
 // The method returns an error if it cannot create the log file or directory.
 func NewLogger(logDir string) (*Logger, error) {
+	if logDir == "" {
+		logDir = DefaultLogDir
+	}
 	// ensure log directory exists
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create log directory: %w", err)
@@ -72,6 +79,8 @@ func (l *Logger) TestStarted(endpoint string, method string, url string) {
 		Msg("Test started")
 }
 
+// RequestStarted logs a message when a request is started, including the
+// request ID and the name of the endpoint being tested.
 func (l *Logger) RequestStarted(id int, endpoint string) {
 	l.log.Debug().
 		Int("requestId", id).
@@ -113,4 +122,28 @@ func (l *Logger) RequestFailed(id int, endpoint string, err error) {
 		Str("endpoint", endpoint).
 		Err(err).
 		Msg("❌ Request failed")
+}
+
+// Info logs a message at the INFO level to both the main logger and the console logger.
+func (l *Logger) Info(message string) {
+	l.log.Info().Msg(message)
+	l.console.Info().Msg(message)
+}
+
+// Debug logs a message at the DEBUG level to both the main logger and the console logger.
+func (logger *Logger) Debug(message string) {
+	logger.log.Debug().Msg(message)
+	logger.console.Debug().Msg(message)
+}
+
+// Error logs a message at the ERROR level to both the main logger and the console logger.
+func (logger *Logger) Error(message string) {
+	logger.log.Error().Msg(message)
+	logger.console.Error().Msg(message)
+}
+
+// Warn logs a message at the WARN level to both the main logger and the console logger.
+func (logger *Logger) Warn(message string) {
+	logger.log.Warn().Msg(message)
+	logger.console.Warn().Msg(message)
 }

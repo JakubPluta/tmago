@@ -9,7 +9,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TODO: implement run command
+// runCmd represents the run command
+// It runs all the tests in the given config concurrently.
+// It will call either runSingle or runConcurrent for each endpoint,
+// depending on whether the endpoint has concurrency configuration.
+// The function will return an error if any of the calls to runSingle
+// or runConcurrent return an error.
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run API tests",

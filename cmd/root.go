@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// rootCmd represents the base command when called without any subcommands
 var (
 	configFile string
 	rootCmd    = &cobra.Command{
@@ -16,6 +17,8 @@ var (
 	}
 )
 
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -23,8 +26,9 @@ func Execute() {
 	}
 }
 
+// init initializes the root command with a required --config flag and adds the run command to it.
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file (required)")
-	rootCmd.MarkPersistentFlagRequired("config") // wymusza podanie flagi
+	rootCmd.MarkPersistentFlagRequired("config")
 	rootCmd.AddCommand(runCmd)
 }

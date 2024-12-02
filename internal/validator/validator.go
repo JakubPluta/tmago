@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/JakubPluta/tmago/internal/config"
+	"github.com/JakubPluta/tmago/internal/logger"
 )
 
 // ValidationResult represents the result of validating an HTTP response.
@@ -22,15 +23,21 @@ type ValidationResult struct {
 type Validator struct {
 	maxDuration time.Duration
 	statusCode  int
+	logger      *logger.Logger
 }
 
 // NewValidator creates a new Validator instance with specified maximum duration
 // and expected HTTP status code. The Validator can be used to validate HTTP
 // responses based on these criteria.
 func NewValidator(maxDuration time.Duration, expectedStatus int) *Validator {
+	logger, err := logger.NewLogger("logs")
+	if err != nil {
+		fmt.Printf("failed to create logger: %v", err)
+	}
 	return &Validator{
 		maxDuration: maxDuration,
 		statusCode:  expectedStatus,
+		logger:      logger,
 	}
 }
 
@@ -54,27 +61,29 @@ func (r *Validator) Validate(resp *http.Response, body []byte, duration time.Dur
 
 	// validate status code
 	if resp.StatusCode != r.statusCode {
-		fmt.Println(resp.StatusCode)
+		r.logger.Warn(fmt.Sprintf("expected status code %d, got %d", r.statusCode, resp.StatusCode))
 		result.Errors = append(result.Errors, fmt.Sprintf("expected status code %d, got %d", r.statusCode, resp.StatusCode))
 	}
 
 	// Response time validation
 	if duration > r.maxDuration {
-		fmt.Printf("expected response time less than %s, got %s", r.maxDuration, duration)
+		r.logger.Warn(fmt.Sprintf("expected response time less than %s, got %s", r.maxDuration, duration))
 		result.Errors = append(result.Errors, fmt.Sprintf("expected response time less than %s, got %s", r.maxDuration, duration))
 	}
+	// value checks
 	if len(valueChecks) > 0 {
 		var responseData map[string]interface{}
 		if err := json.Unmarshal(body, &responseData); err != nil {
-			fmt.Printf("couldn't unmarshal response body: %v", err)
+			r.logger.Warn(fmt.Sprintf("failed to unmarshal response body: %v", err))
 			result.Errors = append(result.Errors, fmt.Sprintf("failed to unmarshal response body: %v", err))
 		} else {
 			for _, check := range valueChecks {
-				fmt.Printf("Checking path %s with value %v\n", check.Path, check.Value)
+				r.logger.Warn(fmt.Sprintf("checking path %s with value %v", check.Path, check.Value))
 				if val, ok := responseData[check.Path]; !ok {
+					r.logger.Warn(fmt.Sprintf("path %s not found in response", check.Path))
 					result.Errors = append(result.Errors, fmt.Sprintf("path %s not found in response", check.Path))
 				} else if val != check.Value {
-					fmt.Printf("path %s expected %v, got %v\n", check.Path, check.Value, val)
+					r.logger.Warn(fmt.Sprintf("path %s expected %v, got %v", check.Path, check.Value, val))
 					result.Errors = append(result.Errors, fmt.Sprintf("path %s expected %v, got %v", check.Path, check.Value, val))
 				}
 
@@ -82,5 +91,8 @@ func (r *Validator) Validate(resp *http.Response, body []byte, duration time.Dur
 		}
 	}
 	result.IsValid = len(result.Errors) == 0
+	if !result.IsValid {
+		r.logger.Warn(fmt.Sprintf("validation failed: %v", result.Errors))
+	}
 	return result
 }

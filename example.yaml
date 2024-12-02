@@ -12,6 +12,6 @@ endpoints:
       count: 1
       delay: "1s"
     concurrent:
-      users: 5
-      delay: "100ms"
-      total: 200
+      users: 10
+      delay: "20ms"
+      total: 50

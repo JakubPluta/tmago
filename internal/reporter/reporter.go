@@ -37,11 +37,13 @@ type Report struct {
 	ChartData      ChartData
 }
 
+// ChartData will be used to generate the latency chart
 type ChartData struct {
 	Labels []string
 	Values []float64
 }
 
+// Reporter is responsible for generating reports
 type Reporter struct {
 	results []TestResult
 	start   time.Time
@@ -63,6 +65,10 @@ func (r *Reporter) AddResult(result TestResult) {
 	r.results = append(r.results, result)
 }
 
+// GenerateHTML generates an HTML report and writes it to the specified output path.
+// The method aggregates the internal test results into a report and uses a predefined
+// HTML template to format the report. It returns an error if there are issues with
+// template parsing, file creation, or template execution.
 func (r *Reporter) GenerateHTML(outputPath string) error {
 	report := r.prepareReport()
 
@@ -87,13 +93,16 @@ func (r *Reporter) GenerateHTML(outputPath string) error {
 	return nil
 }
 
+// prepareReport takes the Reporter's internal results and aggregates them into a single Report.
+// It calculates the total success rate and the total number of endpoints.
+// The method returns a Report instance with the aggregated data.
 func (r *Reporter) prepareReport() Report {
 	var totalSuccess, totalRequests int
 	for _, result := range r.results {
 		totalSuccess += result.SuccessCount
 		totalRequests += result.TotalRequests
 	}
-
+	// calculate success rate
 	successRate := float64(totalSuccess) / float64(totalRequests) * 100
 
 	return Report{

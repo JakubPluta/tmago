@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Test Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold mb-4">API Test Report</h1>
+            
+            
+            <div class="grid grid-cols-4 gap-4 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-blue-700">Total Endpoints</h3>
+                    <p class="text-2xl">1</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-green-700">Success Rate</h3>
+                    <p class="text-2xl">100.00%</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-purple-700">Duration</h3>
+                    <p class="text-2xl">304.738834ms</p>
+                </div>
+            </div>
+
+            
+            <div class="mb-8">
+                <canvas id="latencyChart"></canvas>
+            </div>
+
+            
+            <div class="mt-8">
+                <h2 class="text-2xl font-bold mb-4">Detailed Results</h2>
+                
+                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-semibold">Json PlaceHolder</h3>
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-800">
+                            50/50 Success
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p><strong>Method:</strong> GET</p>
+                            <p><strong>URL:</strong> https://jsonplaceholder.typicode.com/posts/1</p>
+                            <p><strong>Average Latency:</strong> 36.281074ms</p>
+                        </div>
+                        <div>
+                            <p><strong>Min Latency:</strong> 21.946208ms</p>
+                            <p><strong>Max Latency:</strong> 79.131542ms</p>
+                            
+                            <p><strong>Concurrent Users:</strong> 10</p>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const ctx = document.getElementById('latencyChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Json PlaceHolder"],
+            datasets: [{
+                label: 'Average Latency (ms)',
+                data: [100],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </script>
+</body>
+</html>
