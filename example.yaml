@@ -5,9 +5,9 @@ endpoints:
     expect:
       status: 200
       maxTime: "500ms"
-      # values:
-      #   - path: "title"
-      #     value: "foo"
+      values:
+        - path: "userId"
+          value: 1
     retry:
       count: 1
       delay: "1s"

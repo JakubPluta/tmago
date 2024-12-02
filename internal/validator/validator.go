@@ -78,11 +78,11 @@ func (r *Validator) Validate(resp *http.Response, body []byte, duration time.Dur
 			result.Errors = append(result.Errors, fmt.Sprintf("failed to unmarshal response body: %v", err))
 		} else {
 			for _, check := range valueChecks {
-				r.logger.Warn(fmt.Sprintf("checking path %s with value %v", check.Path, check.Value))
 				if val, ok := responseData[check.Path]; !ok {
 					r.logger.Warn(fmt.Sprintf("path %s not found in response", check.Path))
 					result.Errors = append(result.Errors, fmt.Sprintf("path %s not found in response", check.Path))
-				} else if val != check.Value {
+				} else if fmt.Sprintf("%v", val) != fmt.Sprintf("%v", check.Value) {
+					r.logger.Info(fmt.Sprintf("type of val %T and expected %T", val, check.Value))
 					r.logger.Warn(fmt.Sprintf("path %s expected %v, got %v", check.Path, check.Value, val))
 					result.Errors = append(result.Errors, fmt.Sprintf("path %s expected %v, got %v", check.Path, check.Value, val))
 				}
